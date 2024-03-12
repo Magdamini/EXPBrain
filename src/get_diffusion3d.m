@@ -1,5 +1,5 @@
 function [Diff] = get_diffusion3d(nx,ny,nz)
-  dir_name = "brain_scan\";
+  dir_name = "brain_scan/";
   [X1,Cmap]=imread(dir_name + 'out1.png');
   R=X1(:,:,1);
   G=X1(:,:,2);
