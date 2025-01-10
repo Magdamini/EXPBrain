@@ -1,5 +1,6 @@
 function [res,s,m,mv,mvd,unA] = ...
           my_expmv(A,b)
+
 shift = true;
 n = length(A);
 
@@ -19,6 +20,7 @@ switch prec
     case 'half',   tol = 2^(-10);
 end
 
+% finding m & s?
 s = 1;
 
 [m_max,p] = size(M);
@@ -33,40 +35,40 @@ s = 1;
  if cost == inf; cost = 0; end
  s = max(cost/m,1);
 
+% 
+% disp("m");
+% disp(m);
+% disp("s");
+% disp(s);
+
 eta = 1;
 if shift, eta = exp(mu/s); end
-
-
 
 % 
 nums = zeros(m, 1);
 k = zeros(m + 1, 1);
 k(end) = s;
 
-%->
 
-
-Powers = zeros(size(b, 1),s*m);
+Powers = zeros(size(b, 1),s*m+1);
+Powers(:,1) = b;
 Pi = b;
-for power=1:s*m
-   Pi = A * Pi * (1/s);
-   Powers(:,power) = Pi;
+for pp=1:s*m+1
+   Pi = A * (1/s) * Pi;
+   Powers(:,pp+1) = Pi;
 end
-%<- 
-% size(A)
-
 res = zeros(size(b, 1), 1);
 
+coeff = zeros(s*m + 1, 1);
 while 1
 
-    f = b;
-    power=1;
+    f=multi_coefficient(s, k);
+    pp=1;
     for t=0:m
-        f = pt_kt(t, k(t+1), s);
-        power = power + k(t + 1) * t;
+        f = f*pt_kt(t, k(t+1), s);
+        pp = pp + k(t + 1) * t;
     end
-    f = Powers(power)*f * multi_coefficient(s, k);
-    res = res + f;
+    coeff(pp) = coeff(pp) + f;
 
     if nums(end) < s
         j = m;
@@ -89,6 +91,11 @@ while 1
     else
         break
     end
+end
+
+
+for pp = 1: s * m + 1
+    res = res + coeff(pp) * Powers(:,pp);
 end
 
 

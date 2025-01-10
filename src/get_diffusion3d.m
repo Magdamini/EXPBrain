@@ -69,7 +69,7 @@ function [Diff] = get_diffusion3d(nx,ny,nz)
          j=floor(565/ny*n);    
          k=floor(28/nz*l)+1;
          intensity = GRAY(i,j,k);
-         if intensity > 239
+         if intensity > 110
            Diff(m,n,l) = 0.013; %Gray matter
            continue
          end
